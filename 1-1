@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <string.h>
+#include <malloc.h>
+//学生数据域
+struct Student
+{
+    char name[10];
+    char num[10];
+    int score;
+};
+//学生结点
+typedef struct Node
+{
+    struct Student st;
+    struct Node* pNext;
+}NODE,*PNODE;
+
+//初始化全局变量 声明链表的头尾
+PNODE g_pHead=NULL;
+PNODE g_pTail=NULL;
+
+//函数的声明（加分号）
+void AddStuMsg(char* name,char* num,int score);
+
+int  main(void)
+{
+    int nOrder=-1;
+    char name[10]={'\0'};
+    char num[10]={'\0'};
+    int score=-1;
+
+}
+void AddStuMsg(char* name,char* num,int score)
+{
+    //检验参数合理性
+    if(NULL==name||NULL==num||score<0)
+    {
+        printf("学生信息输入有误\n");
+        return;
+    }
+    //逻辑
+    //创建一个结点
+    PNODE pNew=malloc(sizeof(NODE));
+    //结点赋值
+    strcpy(pNew->st.num,num);
+    strcpy(pNew->st.name,name);
+    pNew->st.score=score;
+    pNew->pNext=NULL;
+    //接在链表上
+    if(NULL==g_pHead||NULL==g_pTail)
+    {
+        g_pHead=pNew;
+    }
+    else
+    {
+        g_pTail->pNext=pNew;
+    }
+     g_pTail=pNew;
+
+
+}
