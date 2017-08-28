@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <string.h>
+#include <malloc.h>
+#include <stdlib.h>
+//学生数据域
+struct Student
+{
+	char name[10];
+	char num[12];
+	int score;
+};
+//学生结点
+typedef struct Node
+{
+	struct Student st;
+	struct Node* pNext;
+}NODE, *PNODE;
+
+//初始化全局变量 声明链表的头尾
+PNODE g_pHead = NULL;
+PNODE g_pTail = NULL;
+
+//函数的声明（加分号）
+//添加学生信息
+void AddStuMsg(char* name, char* num, int score);
+
+//清空链表信息
+void FreeLinkDate();
+
+int  main(void)
+{
+	int nOrder = -1;
+	char name[10] = { '\0' };
+	char num[12] = { '\0' };
+	int score = -1;
+	printf("***************学生信息管理系统*********************\n");
+	printf("***************系统操作指令如下*********************\n");
+	printf("***           1 增加一个学生信息                 ***\n");
+	printf("***           2 查找指定学生的信息（姓名/学号）  ***\n");
+	printf("***           3 修改指定学生的信息               ***\n");
+	printf("***           4 保存学生信息到文件中             ***\n");
+	printf("***           5 读取文件中的学生信息             ***\n");
+	printf("***           6 删除指定学生的信息               ***\n");
+	printf("***           7 恢复删除的学生的信息             ***\n");
+	printf("***           8 增加一个学生信息                 ***\n");
+	printf("***           9 显示所有学生的信息               ***\n");
+	printf("***           0 退出系统                         ***\n");
+	printf("****************************************************\n");
+	printf("请输入指令  ");
+	scanf("%d", &nOrder);
+	switch (nOrder)
+	{
+	case 1:
+		//添加一个学生信息
+		printf("请输入学生学号  ");
+		scanf("%s", num);
+		printf("请输入学生姓名  ");
+		scanf("%s", name);
+		printf("请输入学生成绩  ");
+		scanf("%d", &score);
+
+		AddStuMsg(name, num, score);
+		break;
+	default:
+		printf("你输入的指令有误\n");
+	}
+	FreeLinkDate();
+	system("pause");
+	return 0;
+}
+void AddStuMsg(char* name, char* num, int score)
+{
+	//检验参数合理性
+	if (NULL == name || NULL == num || score<0)
+	{
+		printf("学生信息输入有误\n");
+		return;
+	}
+	//逻辑
+	//创建一个结点
+	PNODE pNew = malloc(sizeof(NODE));
+	//结点赋值
+	strcpy(pNew->st.num, num);
+	strcpy(pNew->st.name, name);
+	pNew->st.score = score;
+	pNew->pNext = NULL;
+	//接在链表上
+	if (NULL == g_pHead || NULL == g_pTail)
+	{
+		g_pHead = pNew;
+	}
+	else
+	{
+		g_pTail->pNext = pNew;
+	}
+	g_pTail = pNew;
+	return;
+}
+//清空链表信息
+void FreeLinkDate()
+{
+	PNODE pTemp = g_pHead;
+	while (NULL != g_pHead)
+	{
+		//记录结点
+		pTemp = g_pHead;
+		//移动到下一个结点
+		g_pHead = g_pHead->pNext;
+		//删除结点
+		free(pTemp);
+	}
+}
