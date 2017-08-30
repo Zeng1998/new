@@ -1,0 +1,291 @@
+#include <stdio.h>
+#include <string.h>
+#include <malloc.h>
+#include <stdlib.h>
+//学生数据域
+struct Student
+{
+	char name[10];
+	char num[12];
+	int score;
+};
+//学生结点
+typedef struct Node
+{
+	struct Student st;
+	struct Node* pNext;
+}NODE, *PNODE;
+
+//初始化全局变量 声明链表的头尾
+PNODE g_pHead = NULL;
+PNODE g_pTail = NULL;
+
+//函数的声明（加分号）
+//添加学生信息
+void AddStuMsg(char* name, char* num, int score);
+//显示命令
+void ShowOrder();
+//清空链表信息
+void FreeLinkDate();
+//查找学生信息
+PNODE SearchStuDate(char* num);
+//显示学生信息
+void ShowStuDate(PNODE pTemp);
+//显示所有学生信息
+void ShwoAllStuDate();
+//显示小命令
+void SmallOrder();
+//显示一个学生信息
+void ShwoAllStuDate();
+//删除学生信息
+void DeleteStuDate();
+
+
+int  main(void)
+{
+	int nOrder = -1;
+	char name[10] = { '\0' };
+	char num[12] = { '\0' };
+	int score = -1;
+	int flag = 1;
+	PNODE pTemp = NULL;
+	char o;
+
+	while (flag)
+	{
+		printf("请输入指令(10查看指令)  ");
+		scanf("%d", &nOrder);
+		switch (nOrder)
+		{
+		case 1:
+			//添加一个学生信息
+			printf("请输入学生学号  ");
+			scanf("%s", num);
+			printf("请输入学生姓名  ");
+			scanf("%s", name);
+			printf("请输入学生成绩  ");
+			scanf("%d", &score);
+
+			AddStuMsg(name, num, score);
+			break;
+		case 2:
+			printf("请输入要查询的学生学号  ");
+			scanf("%s", num);
+			pTemp = SearchStuDate(num);
+			printf("学号     姓名     成绩\n");
+			ShowStuDate(pTemp);
+			break;
+		case 3:
+			printf("请输入要删除的学生学号  ");
+			scanf("%s", num);
+			pTemp = SearchStuDate(num);
+			printf("学号     姓名     成绩\n");
+			ShowStuDate(pTemp);
+			printf("是否删除？(Y/N)\n");
+			scanf("%c", &o);
+			if ('y' == o || 'Y' == o)
+			{
+				DeleteStuDate(pTemp);
+				break;
+			}
+			else
+			{
+				break;
+			}
+		case 5:
+			ShwoAllStuDate();
+			break;
+		case 10:
+			ShowOrder();
+			break;
+		case 0:
+			flag = 0;
+			break;
+		default:
+			printf("你输入的指令有误\n");
+		}
+	}
+
+	FreeLinkDate();
+	system("pause");
+	return 0;
+}
+void ShowOrder()
+{
+	printf("***************学生信息管理系统*********************\n");
+	printf("***************系统操作指令如下*********************\n");
+	printf("***           1 增加一个学生信息                 ***\n");
+	printf("***           2 查找指定学生的信息               ***\n");
+	printf("***           3 删除指定学生的信息               ***\n");
+	printf("***           4 修改指定学生的信息               ***\n");
+	printf("***           5 显示所有学生的信息               ***\n");
+	printf("***           6 保存学生信息到文件中             ***\n");
+	printf("***           7 读取文件中的学生信息             ***\n");
+	printf("***           8 恢复删除的学生的信息             ***\n");
+	printf("***           0 退出系统                         ***\n");
+	printf("****************************************************\n");
+	return;
+}
+//添加一个学生信息
+void AddStuMsg(char* name, char* num, int score)
+{
+	//检验参数合理性
+	if (NULL == name || NULL == num || score<0)
+	{
+		printf("学生信息输入有误\n");
+		return;
+	}
+	//逻辑
+	//创建一个结点
+	PNODE pNew = malloc(sizeof(NODE));
+	//结点赋值
+	strcpy(pNew->st.num, num);
+	strcpy(pNew->st.name, name);
+	pNew->st.score = score;
+	pNew->pNext = NULL;
+	//接在链表上
+	if (NULL == g_pHead || NULL == g_pTail)
+	{
+		g_pHead = pNew;
+	}
+	else
+	{
+		g_pTail->pNext = pNew;
+	}
+	g_pTail = pNew;
+	return;
+}
+//清空链表信息
+void FreeLinkDate()
+{
+	PNODE pTemp = g_pHead;
+	while (NULL != g_pHead)
+	{
+		//记录结点
+		pTemp = g_pHead;
+		//移动到下一个结点
+		g_pHead = g_pHead->pNext;
+		//删除结点
+		free(pTemp);
+	}
+}
+PNODE SearchStuDate(char* num)
+{
+	PNODE pTemp = g_pHead;
+	int nOrder = -1;
+	int flag = 1;
+	//检验参数合理性
+	if (NULL == num || num <= 0)
+	{
+		printf("学号输入错误\n");
+		return NULL;
+	}
+	if (NULL == g_pHead)
+	{
+		printf("链表为空\n");
+		return NULL;
+	}
+	while (NULL != pTemp)
+	{
+		if (0 == strcmp(pTemp->st.num, num))
+		{
+			printf("查找成功\n");
+			return pTemp;
+		}
+		pTemp = pTemp->pNext;
+	}
+	printf("查无此结点\n");
+	return NULL;
+}
+void SmallOrder()
+{
+	printf("***     1.查看信息     ***\n");
+	printf("***     2.修改信息     ***\n");
+	printf("***     3.删除信息     ***\n");
+	printf("***     4.插入信息     ***\n");
+	printf("***     0.退出         ***\n");
+	return;
+}
+void ShowStuDate(PNODE pTemp)
+{
+	printf("%s        %s        %d\n", pTemp->st.num, pTemp->st.name, pTemp->st.score);
+	return;
+}
+void DeleteStuDate(PNODE pNode)
+{
+	//只有一个节点
+	if (g_pHead == g_pTail)
+	{
+		free(g_pHead);
+		g_pHead = NULL;
+		g_pTail = NULL;
+	}
+	//只有两个节点
+	else if (g_pHead->pNext == g_pTail)
+	{
+		if (g_pHead == pNode)
+		{
+			free(g_pHead);
+			g_pHead = g_pTail;
+		}
+		else
+		{
+			free(g_pTail);
+			g_pTail = g_pHead;
+			g_pHead->pNext = NULL;
+		}
+	}
+	else // >=3
+	{
+		PNODE pTemp = g_pHead;
+		//判断头
+		if (g_pHead == pNode)
+		{
+			//记住头
+			pTemp = g_pHead;
+			g_pHead = g_pHead->pNext;
+			free(pTemp);
+			pTemp = NULL;
+			return;  //结束
+		}
+
+		while (pTemp)
+		{
+			if (pTemp->pNext == pNode)
+			{
+				//删除
+				if (pNode == g_pTail)
+				{
+					free(pNode);
+					pNode = NULL;
+					g_pTail = pTemp;
+					g_pTail->pNext = NULL;
+					return;
+				}
+				else
+				{
+					//记住要删除的节点
+					PNODE p = pTemp->pNext;
+					//链接
+					pTemp->pNext = pTemp->pNext->pNext;
+					//释放节点
+					free(p);
+					p = NULL;
+					return;
+				}
+			}
+
+			pTemp = pTemp->pNext;
+		}
+	}
+}
+void ShwoAllStuDate()
+{
+	PNODE pTemp = g_pHead;
+	printf("学号     姓名     成绩\n");
+	while (NULL != pTemp)
+	{
+		ShowStuDate(pTemp);
+		pTemp = pTemp->pNext;
+	}
+}
